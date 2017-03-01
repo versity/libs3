@@ -67,17 +67,6 @@ static void InitialMultipartCompleteCallback
     free(mdata);
 }    
 
-static void AbortMultipartUploadCompleteCallback
-    (S3Status requestStatus, const S3ErrorDetails *s3ErrorDetails,
-     void *callbackData) 
-{    
-    (void) callbackData;
-    (void) s3ErrorDetails;
-    if (requestStatus != S3StatusOK) {
-        fprintf(stderr, "\nERROR: %s\n", S3_get_status_name(requestStatus));
-    }
-}
-
 static S3Status initialMultipartXmlCallback(const char *elementPath,
                                             const char *data,
                                             int dataLen,
