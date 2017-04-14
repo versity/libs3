@@ -839,11 +839,13 @@ typedef struct S3PutProperties
     const char *contentType;
 
     /**
-     * If present, this provides the MD5 signature of the contents, and is
+     * If present, this provides the checksum signature of the contents, and is
      * used to validate the contents.  This is highly recommended by Amazon
-     * but not required.  Its format is as a base64-encoded MD5 sum.
+     * but not required.
+     * For v2 auth this format is a base64-encoded MD5 sum.
+     * For v4 auth this format is a hex sha256 string.
      **/
-    const char *md5;
+    const char *digest;
 
     /**
      * If present, this gives a Cache-Control header string to be supplied to

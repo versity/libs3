@@ -97,9 +97,9 @@ void createMockObjs(const std::string &httpVerb,
     *request = req;
     S3PutProperties *putProperties = new S3PutProperties;
     if (payloadhash.empty())
-        putProperties->md5 = emptysha256;
+        putProperties->digest = emptysha256;
     else
-        putProperties->md5 = payloadhash.c_str();
+        putProperties->digest = payloadhash.c_str();
     RequestParams *par = new RequestParams;
     par->httpRequestType = http_verb_to_type(httpVerb);
     par->putProperties = putProperties;

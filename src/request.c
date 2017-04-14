@@ -369,10 +369,10 @@ static S3Status compose_amz_headers(const RequestParams *params,
 
     if (signatureVersionG == S3SignatureV4) {
         // Add the x-amz-content-sha256 header
-        if (properties && properties->md5 && properties->md5[0]) {
-            headers_append(1, "x-amz-content-sha256: %s", properties->md5);
+        if (properties && properties->digest && properties->digest[0]) {
+            headers_append(1, "x-amz-content-sha256: %s", properties->digest);
         } else {
-            headers_append(1, "%s", "x-amz-content-sha256: UNSIGNED-PAYLOAD");
+         headers_append(1, "%s", "x-amz-content-sha256: UNSIGNED-PAYLOAD");
         }
     }
     if (params->httpRequestType == HttpRequestTypeCOPY) {
@@ -503,8 +503,12 @@ static S3Status compose_standard_headers(const RequestParams *params,
                   S3StatusBadContentType, S3StatusContentTypeTooLong);
 
     // MD5
-    do_put_header("Content-MD5: %s", md5, md5Header, S3StatusBadMD5,
-                  S3StatusMD5TooLong);
+    if (signatureVersionG == S3SignatureV4) {
+        values->md5Header[0] = 0;
+    } else {
+        do_put_header("Content-MD5: %s", digest, md5Header, S3StatusBadMD5,
+                      S3StatusMD5TooLong);
+    }
 
     // Content-Disposition
     do_put_header("Content-Disposition: attachment; filename=\"%s\"",
@@ -1186,9 +1190,9 @@ S3Status canonicalize_request_hash(char *buf, int maxlen, int *plen,
     ret = canonicalize_headers(canonicalRequest, sizeof(canonicalRequest),
                                &len, request->headers, values);
     if (ret != S3StatusOK) return ret;
-    if (params->putProperties && params->putProperties->md5
-        && params->putProperties->md5[0]) {
-        creq_append("%s", params->putProperties->md5);
+    if (params->putProperties && params->putProperties->digest
+        && params->putProperties->digest[0]) {
+        creq_append("%s", params->putProperties->digest);
     } else {
         creq_append("%s", "UNSIGNED-PAYLOAD");
     }

@@ -2167,7 +2167,7 @@ static void put_object(int argc, char **argv, int optindex,
     const char *uploadId = 0;
     const char *filename = 0;
     uint64_t contentLength = 0;
-    const char *cacheControl = 0, *contentType = 0, *md5 = 0;
+    const char *cacheControl = 0, *contentType = 0, *digest = 0;
     const char *contentDispositionFilename = 0, *contentEncoding = 0;
     int64_t expires = -1;
     S3CannedAcl cannedAcl = S3CannedAclPrivate;
@@ -2200,7 +2200,7 @@ static void put_object(int argc, char **argv, int optindex,
             contentType = &(param[CONTENT_TYPE_PREFIX_LEN]);
         }
         else if (!strncmp(param, MD5_PREFIX, MD5_PREFIX_LEN)) {
-            md5 = &(param[MD5_PREFIX_LEN]);
+            digest = &(param[MD5_PREFIX_LEN]);
         }
         else if (!strncmp(param, CONTENT_DISPOSITION_FILENAME_PREFIX,
                           CONTENT_DISPOSITION_FILENAME_PREFIX_LEN)) {
@@ -2368,7 +2368,7 @@ static void put_object(int argc, char **argv, int optindex,
     S3PutProperties putProperties =
     {
         contentType,
-        md5,
+        digest,
         cacheControl,
         contentDispositionFilename,
         contentEncoding,
@@ -2480,7 +2480,7 @@ upload:
             partData.put_object_data.originalContentLength = partContentLength;
             partData.put_object_data.totalContentLength = todoContentLength;
             partData.put_object_data.totalOriginalContentLength = totalContentLength;
-            putProperties.md5 = 0;
+            putProperties.digest = 0;
             do {
                 if (srcSize) {
                     S3BucketContext srcBucketContext =
