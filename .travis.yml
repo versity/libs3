@@ -2,40 +2,30 @@ language: bash
 sudo: required
 dist: trusty
 services: docker
-
 notifications:
+  on_success: always
+  on_failure: always
   slack:
-      secure: "uF5jtMi2cSMKdcsFieYlnruHTApd5GudTCAIh/AJmuv5zO/4sU8O0VV8uTXee4MtP+pbtuBjWMnF+cG0T9Kmn41bUwj0+TYqCDiTqgTy+56jseNylFNif+DjoO7xPEefBb8D+KyGX0Zp8BxtyowCUl4KckTyCe2xQ0uu/kgySo0="
-  on_success: always # default: always
-  on_failure: always # default: always
-
-
+    secure: GLHLPYbwrJ74fLPF4dcPnWsX5+EIyZdx4QYscOCIfWonYJwRLZahOWxu0ZUlOZPA2ndC0vlbLJswMsd/BsQnVDSI4QM3JCYbKBQB58cKzcpzpd6/QNeIQCRAvuKdZEWBSp9GbTdZI4gSx6hGSPDwlXtiRPUpuqtxm6qeS4VlbwD5Onqa7Qbx7sNln588sGPBhPlSFSFSS/CW3JN2a6nLiHd3DXy7rXmK9P1S7D3yYU2eHEfAOevq/HVnJq1bz8NKhReIbOKWA5oQWfdWRP3bv/puvTzY74VW8hlGXZ3MXqlpBxfsB0nEdKD0Iz8ue1PZI7SA3ZbgTxBe+RIp+XnnP1TQxpiVKX0TCEH2taqIFq+fYE2W6B4zBq4OB3zThr60hb3PoQE/cGrSazwuHor1rqLHMWqwwsEqTXsX4YI3ig1K7vtNIoYrv7Y1TyEnNPCDcu4PqcyB+EQTsG9t6bPWPHwzjKuWZVaPHjiNce5Fe7ci+HUZ4YYEsf7e6tB3huu09xG403h7GNn+nwXllnzdOOqJ8uQUQxyKG8yJp3dhy1FkC0m6w13FjcqKRorwI0mu/sAn853Umwq/EQbwfack9YUcg9FnlvSh6J9Z18hI2h6Ftg4JTkQAVTSshhYPbntgbP+lYBzzS1OdINnn7NecMBbAjRk4JQqUo2wGc4H+Y0s=
 deploy:
-  - provider: script
-    script: /bin/bash -x $TRAVIS_BUILD_DIR/.travis_deploy.sh
-    skip_cleanup: true
-    on:
-      tags: true
-      all_branches: true
-
+- provider: script
+  script: "/bin/bash -x $TRAVIS_BUILD_DIR/.travis_deploy.sh"
+  skip_cleanup: true
+  on:
+    tags: true
+    all_branches: true
 env:
   matrix:
-    - VERSION=el7x DISTRO_VERS=7.x DISTRO=.el7
-    - VERSION=el6x DISTRO_VERS=6.x DISTRO=.el6
-
+  - VERSION=el7x DISTRO_VERS=7.x DISTRO=.el7
+  - VERSION=el6x DISTRO_VERS=6.x DISTRO=.el6
 before_script:
-  - env | sort
-  - mkdir -p upload_rpms/$DISTRO_VERS
-
+- env | sort
+- mkdir -p upload_rpms/$DISTRO_VERS
 script:
-  - travis_wait docker run --privileged=true -e USER=root -e DISTRO=$DISTRO -e DISTRO_VERS=$DISTRO_VERS -e PWD=/src --rm -v $(pwd):/src -w /src versity/rpm-build:${VERSION} make rpm
-  - find build -name "*${DISTRO}*.x86_64.rpm" | xargs -n1 cp --target-directory=$(pwd)/upload_rpms/$DISTRO_VERS
-
+- travis_wait docker run --privileged=true -e USER=root -e DISTRO=$DISTRO -e DISTRO_VERS=$DISTRO_VERS -e PWD=/src --rm -v $(pwd):/src -w /src versity/rpm-build:${VERSION} make rpm
+- find build -name "*${DISTRO}*.x86_64.rpm" | xargs -n1 cp --target-directory=$(pwd)/upload_rpms/$DISTRO_VERS
 before_deploy:
-  - ls -la upload_rpms/
-
-  - wget https://dl.bintray.com/jfrog/jfrog-cli-go/1.7.1/jfrog-cli-linux-amd64/jfrog
-  - chmod +x jfrog
-  - ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --password $ARTIFACTORY_PASSWORD
-
-# vim:set et ts=2 sw=2:
+- ls -la upload_rpms/
+- wget https://dl.bintray.com/jfrog/jfrog-cli-go/1.7.1/jfrog-cli-linux-amd64/jfrog
+- chmod +x jfrog
+- "./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --password $ARTIFACTORY_PASSWORD"
