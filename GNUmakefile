@@ -360,11 +360,11 @@ export RESULT_DIR = $(PWD)/pkg-linux/libs3-$(FULL_VERSION)
 
 rpm: dist
 	@mkdir -p $(RPM_DIR)
-	env RPM_DIR=$(RPM_DIR) rpmbuild.sh $(GIT_TARPATH).tar.gz
+	env RPM_DIR=$(RPM_DIR) $(PWD)/pkg-linux/rpmbuild.sh $(GIT_TARPATH).tar.gz
 
 relrpm: dist
 	@mkdir -p $(RPM_DIR)
-	env RPM_DIR=$(RPM_DIR) REL_BUILD="yes" rpmbuild.sh $(GIT_TARPATH).tar.gz
+	env RPM_DIR=$(RPM_DIR) REL_BUILD="yes" $(PWD)/pkg-linux/rpmbuild.sh $(GIT_TARPATH).tar.gz
 
 # --------------------------------------------------------------------------
 # Debian package target
