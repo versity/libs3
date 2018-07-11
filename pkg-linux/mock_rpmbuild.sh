@@ -82,7 +82,6 @@ DEV_BUILD=${DEV_BUILD:-"no"}
 REL_BUILD=${REL_BUILD:-"no"}
 # matches vsm 'DEBUG', turns on debug builds of source
 DEBUG=${DEBUG:-"no"}
-DEBUG_KERN=${DEBUG_KERN:-"no"}
 
 # turn off safety for speed
 UNCLEAN_MOCK=${UNCLEAN_MOCK:-"no"}
@@ -118,14 +117,12 @@ print_vars_and_flags() {
     echo "MOCK_CONFIG: -> '$MOCK_CONFIG'"
     echo "RESULT_DIR: -> '$RESULT_DIR'"
     echo "RPM_DIR: -> '$RPM_DIR'"
-    echo "KVERSION: -> '$KVERSION'"
 
     echo
     echo "Flags:"
     echo "DEV_BUILD: -> $DEV_BUILD ($(string_flag "$DEV_BUILD"))"
     echo "REL_BUILD: -> $REL_BUILD ($(string_flag "$REL_BUILD"))"
     echo "DEBUG: -> $DEBUG ($(string_flag "$DEBUG"))"
-    echo "DEBUG_KERN: -> $DEBUG_KERN ($(string_flag "$DEBUG_KERN"))"
     echo "UNCLEAN_MOCK: -> $UNCLEAN_MOCK ($(string_flag "$UNCLEAN_MOCK"))"
     echo
 
@@ -140,10 +137,6 @@ mock_init() {
 mock_build () {
     OPTARGS=""
 
-    if [ "${KVERSION}" != "" ]; then
-        OPTARGS="$OPTARGS --define 'kversion ${KVERSION}'"
-    fi
-
     if test_flag "$DEBUG"; then
         OPTARGS="$OPTARGS --define 'debugbuild 1'"
     fi
@@ -156,10 +149,6 @@ mock_build () {
 
     if test_flag "$REL_BUILD"; then
         OPTARGS="$OPTARGS --define '_release 1'"
-    fi
-
-    if test_flag "$DEBUG_KERN"; then
-        OPTARGS="$OPTARGS --define 'kerndebug 1'"
     fi
 
     if test_flag "$UNCLEAN_MOCK"; then
@@ -206,66 +195,24 @@ common_build () {
     mock_init && mock_build
 }
 
-# Build against Centos 6.4
-build_centos_64() {
-    MOCK_CONFIG=${MOCK_CONFIG:-"centos-6.4-x86_64"}
-    KVERSION=${KVERSION:-"2.6.32-358.23.2.el6"}
-    common_build
-}
-
-# Centos 6.5
-build_centos_65() {
-    MOCK_CONFIG=${MOCK_CONFIG:-"centos-6.5-x86_64"}
-    KVERSION=${KVERSION:-"2.6.32-431.29.2.el6"}
-    common_build
-}
-
-# Centos 6.6
-build_centos_66() {
-    MOCK_CONFIG=${MOCK_CONFIG:-"centos-6.6-x86_64"}
-    KVERSION=${KVERSION:-"2.6.32-504.23.4.el6"}
-    common_build
-}
-
-# Centos 6.7
-build_centos_67() {
-    MOCK_CONFIG=${MOCK_CONFIG:-"centos-6.7-x86_64"}
-    KVERSION=${KVERSION:-"2.6.32-573.12.1.el6"}
-    common_build
-}
-
 # Centos 6.x (latest)
 build_centos_6x() {
     MOCK_CONFIG=${MOCK_CONFIG:-"centos-6.x-x86_64"}
-    KVERSION=${KVERSION:-"2.6.32-573.el6"}
     common_build
 }
 
 # Centos 7.x (latest)
 build_centos_7x() {
     MOCK_CONFIG=${MOCK_CONFIG:-"centos-7.x-x86_64"}
-    KVERSION=${KVERSION:-"3.10.0-327.18.2.el7"}
     common_build
 }
 
 # Users can set the DISTRO_VERS environment variable to choose
 # which CentOS distro to build against.  There is no command
 # line option for this functionality.
-DISTRO_VERS=${DISTRO_VERS:-6.6}
+DISTRO_VERS=${DISTRO_VERS:-6.x}
 
 case "$DISTRO_VERS" in
- "6.4")
-    build_centos_64
-    ;;
- "6.5")
-    build_centos_65
-    ;;
- "6.6")
-    build_centos_66
-    ;;
- "6.7")
-    build_centos_67
-    ;;
  "6.x")
     build_centos_6x
     ;;
@@ -273,21 +220,10 @@ case "$DISTRO_VERS" in
     build_centos_7x
     ;;
  *)
-    echo "DISTRO_VERS must be one of: 6.4 6.5 6.6 6.7 6.x 7.x"
+    echo "DISTRO_VERS must be one of: 6.x 7.x"
     echo "You specified DISTRO_VERS=\"${DISTRO_VERS}\""
     exit 1
     ;;
 esac
 
-if test -f test/check.sh; then
-    # make sure the RPMS conform
-    bash test/check.sh "${RESULT_DIR}"
-    rc=$?
-
-    if [ "$rc" -ne 0 ]; then
-      echo "RPMS build ok, but install checks fail rc=$rc"
-    fi
-    exit $rc
-else
-    exit 0
-fi
+exit 0

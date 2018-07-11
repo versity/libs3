@@ -355,16 +355,16 @@ RPM_RELEASE := $(shell echo $(RELEASE) | tr '-' '.')
 		-e s'/@@RELEASE@@/$(RPM_RELEASE)/g' < $< > $@+
 	$(VERBOSE_SHOW) mv $@+ $(BUILD)/$@
 
-RPM_DIR = $(PWD)/$(BUILD)/rpmbuild
+RPM_DIR = $(BUILD)/rpmbuild
 export RESULT_DIR = $(PWD)/pkg-linux/libs3-$(FULL_VERSION)
 
 rpm: dist
 	@mkdir -p $(RPM_DIR)
-	env RPM_DIR=$(RPM_DIR) $(PWD)/pkg-linux/rpmbuild.sh $(GIT_TARPATH).tar.gz
+	env RPM_DIR=$(RPM_DIR) bash ./pkg-linux/mock_rpmbuild.sh $(GIT_TARPATH).tar.gz $(BUILD)/libs3.spec
 
 relrpm: dist
 	@mkdir -p $(RPM_DIR)
-	env RPM_DIR=$(RPM_DIR) REL_BUILD="yes" $(PWD)/pkg-linux/rpmbuild.sh $(GIT_TARPATH).tar.gz
+	env RPM_DIR=$(RPM_DIR) REL_BUILD="yes" bash ./pkg-linux/mock_rpmbuild.sh $(GIT_TARPATH).tar.gz $(BUILD)/libs3.spec
 
 # --------------------------------------------------------------------------
 # Debian package target
