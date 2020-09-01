@@ -1619,7 +1619,7 @@ S3Status request_api_initialize(const char *userAgentInfo, int flags,
         userAgentInfo = "Unknown";
     }
 
-    char platform[96];
+    char platform[96 * 2];
     struct utsname utsn;
     if (uname(&utsn)) {
         snprintf(platform, sizeof(platform), "Unknown");

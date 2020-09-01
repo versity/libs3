@@ -484,17 +484,29 @@ uint64_t hash(const unsigned char *k, int length)
         
         switch(length) {
         case 12: c += ((uint32_t) k[11]) << 24;
+                 __attribute__ ((fallthrough));
         case 11: c += ((uint32_t) k[10]) << 16;
+                 __attribute__ ((fallthrough));
         case 10: c += ((uint32_t) k[9]) << 8;
+                 __attribute__ ((fallthrough));
         case 9 : c += k[8];
+                 __attribute__ ((fallthrough));
         case 8 : b += ((uint32_t) k[7]) << 24;
+                 __attribute__ ((fallthrough));
         case 7 : b += ((uint32_t) k[6]) << 16;
+                 __attribute__ ((fallthrough));
         case 6 : b += ((uint32_t) k[5]) << 8;
+                 __attribute__ ((fallthrough));
         case 5 : b += k[4];
+                 __attribute__ ((fallthrough));
         case 4 : a += ((uint32_t) k[3]) << 24;
+                 __attribute__ ((fallthrough));
         case 3 : a += ((uint32_t) k[2]) << 16;
+                 __attribute__ ((fallthrough));
         case 2 : a += ((uint32_t) k[1]) << 8;
-        case 1 : a += k[0]; break;
+                 __attribute__ ((fallthrough));
+        case 1 : a += k[0];
+                 break;
         case 0 : goto end;
         }
     }
@@ -524,17 +536,29 @@ uint64_t hash(const unsigned char *k, int length)
 
         switch(length) {
         case 12: c += k[11];
+                 __attribute__ ((fallthrough));
         case 11: c += ((uint32_t) k[10]) << 8;
+                 __attribute__ ((fallthrough));
         case 10: c += ((uint32_t) k[9]) << 16;
+                 __attribute__ ((fallthrough));
         case 9 : c += ((uint32_t) k[8]) << 24;
+                 __attribute__ ((fallthrough));
         case 8 : b += k[7];
+                 __attribute__ ((fallthrough));
         case 7 : b += ((uint32_t) k[6]) << 8;
+                 __attribute__ ((fallthrough));
         case 6 : b += ((uint32_t) k[5]) << 16;
+                 __attribute__ ((fallthrough));
         case 5 : b += ((uint32_t) k[4]) << 24;
+                 __attribute__ ((fallthrough));
         case 4 : a += k[3];
+                 __attribute__ ((fallthrough));
         case 3 : a += ((uint32_t) k[2]) << 8;
+                 __attribute__ ((fallthrough));
         case 2 : a += ((uint32_t) k[1]) << 16;
-        case 1 : a += ((uint32_t) k[0]) << 24; break;
+                 __attribute__ ((fallthrough));
+        case 1 : a += ((uint32_t) k[0]) << 24;
+                 break;
         case 0 : goto end;
         }
     }
